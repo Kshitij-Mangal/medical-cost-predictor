@@ -1,0 +1,796 @@
+Index · HTML
+Copy
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>InsureIQ — Medical Cost Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    :root {
+      --bg:           #080c14;
+      --surface:      #0e1421;
+      --card:         #111827;
+      --card-raised:  #161e2e;
+      --border:       rgba(255,255,255,0.07);
+      --border-md:    rgba(255,255,255,0.12);
+      --accent:       #4f9eff;
+      --accent2:      #7b5ea7;
+      --accent-dim:   rgba(79,158,255,0.10);
+      --accent-glow:  rgba(79,158,255,0.22);
+      --success:      #34d399;
+      --success-dim:  rgba(52,211,153,0.12);
+      --amber:        #fbbf24;
+      --red:          #f87171;
+      --text:         #e4eaf5;
+      --muted:        #6b7a99;
+      --label:        #94a3b8;
+      --radius:       14px;
+      --radius-sm:    9px;
+      --font:         'DM Sans', sans-serif;
+      --font-serif:   'DM Serif Display', serif;
+    }
+ 
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+    }
+ 
+    /* ── Background orbs ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 15% 8%,  rgba(79,158,255,0.11) 0%, transparent 60%),
+        radial-gradient(ellipse 45% 40% at 85% 85%, rgba(123,94,167,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 30% 30% at 60% 40%, rgba(52,211,153,0.05) 0%, transparent 55%);
+    }
+ 
+    /* ── Layout ── */
+    .layout {
+      position: relative; z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+      min-height: 100vh;
+    }
+ 
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .right-panel { order: -1; }
+    }
+ 
+    /* ── Left panel ── */
+    .left-panel {
+      padding: 2.5rem 2.5rem 2.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow-y: auto;
+    }
+ 
+    @media (max-width: 600px) { .left-panel { padding: 1.5rem 1.25rem; } }
+ 
+    /* ── Right panel ── */
+    .right-panel {
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+ 
+    @media (max-width: 900px) {
+      .right-panel {
+        position: static;
+        height: auto;
+        border-left: none;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+ 
+    /* ── Header ── */
+    .header { animation: fadeDown 0.55s ease both; }
+ 
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(79,158,255,0.22);
+      padding: 0.28rem 0.85rem;
+      border-radius: 100px;
+      margin-bottom: 1.1rem;
+    }
+    .badge::before {
+      content: ''; display: inline-block;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+    }
+ 
+    .header h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 3.5vw, 2.75rem);
+      line-height: 1.12;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+    .header h1 em {
+      font-style: italic;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: var(--muted); font-size: 0.93rem; font-weight: 300;
+      line-height: 1.65; max-width: 400px;
+    }
+ 
+    /* ── Section label ── */
+    .section-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+ 
+    /* ── Field grid ── */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .field.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--label); letter-spacing: 0.01em;
+    }
+ 
+    /* ── Inputs ── */
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 0.9rem; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); pointer-events: none; font-size: 1rem;
+    }
+ 
+    input[type="number"], select {
+      width: 100%;
+      padding: 0.7rem 0.95rem 0.7rem 2.4rem;
+      background: var(--card);
+      border: 1.5px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: var(--font); font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    input[type="number"]:focus, select:focus {
+      border-color: var(--accent);
+      background: var(--card-raised);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    input::placeholder { color: rgba(107,122,153,0.5); }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%236b7a99' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.9rem center;
+      padding-right: 2.4rem; cursor: pointer;
+    }
+    select option { background: #111827; }
+ 
+    /* ── Toggle (smoker / sex) ── */
+    .toggle-group {
+      display: flex;
+      background: var(--card);
+      border: 1.5px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .toggle-group:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .toggle-group input[type="radio"] { display: none; }
+    .toggle-group label {
+      flex: 1; text-align: center;
+      padding: 0.7rem 0.4rem;
+      font-size: 0.86rem; font-weight: 500;
+      color: var(--muted); cursor: pointer;
+      transition: color 0.18s, background 0.18s;
+    }
+    .toggle-group input[type="radio"]:checked + label {
+      background: rgba(79,158,255,0.13);
+      color: var(--accent);
+    }
+ 
+    /* ── BMI display ── */
+    .bmi-display {
+      background: var(--card);
+      border: 1.5px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      min-height: 52px;
+      display: flex; align-items: center;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .bmi-display.active { border-color: var(--accent); }
+    .bmi-placeholder { font-size: 0.85rem; color: rgba(107,122,153,0.5); font-style: italic; }
+    .bmi-result { width: 100%; }
+    .bmi-value {
+      font-family: var(--font-serif); font-size: 1.6rem;
+      color: var(--text); line-height: 1; margin-bottom: 0.5rem;
+    }
+    .bmi-category {
+      font-size: 0.72rem; font-weight: 600;
+      padding: 0.14rem 0.55rem; border-radius: 100px;
+      margin-left: 0.4rem; vertical-align: middle;
+      transition: all 0.3s;
+    }
+    .bmi-bar-track {
+      position: relative; height: 5px; border-radius: 99px;
+      background: linear-gradient(to right, #4f9eff 0%, #34d399 25%, #fbbf24 60%, #f87171 100%);
+      margin-bottom: 0.3rem;
+    }
+    .bmi-marker {
+      position: absolute; top: 50%; transform: translate(-50%, -50%);
+      width: 13px; height: 13px; border-radius: 50%;
+      background: var(--bg); border: 2.5px solid var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      transition: left 0.4s cubic-bezier(.34,1.56,.64,1);
+      left: 0%;
+    }
+    .bmi-bar-labels {
+      display: flex; justify-content: space-between;
+      font-size: 0.64rem; color: var(--muted);
+    }
+ 
+    /* ── Region / Algo pills ── */
+    .pill-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.55rem;
+    }
+    .pill-grid.algo-grid { grid-template-columns: repeat(4, 1fr); }
+    .pill-grid input[type="radio"] { display: none; }
+    .pill {
+      text-align: center;
+      padding: 0.6rem 0.3rem;
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--muted);
+      background: var(--card);
+      border: 1.5px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .pill:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .pill-grid input[type="radio"]:checked + .pill {
+      background: rgba(79,158,255,0.11);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    /* region pills use accent2 */
+    .region-grid input[type="radio"]:checked + .pill {
+      background: rgba(123,94,167,0.14);
+      border-color: var(--accent2);
+      color: #c4a8f5;
+    }
+ 
+    /* ── Submit button ── */
+    .submit-btn {
+      width: 100%; padding: 0.95rem 1.5rem;
+      border: none; border-radius: var(--radius);
+      background: linear-gradient(135deg, #4f9eff 0%, #7b5ea7 100%);
+      color: #fff; font-family: var(--font);
+      font-size: 0.97rem; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.12s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(79,158,255,0.22);
+      position: relative;
+    }
+    .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 10px 32px rgba(79,158,255,0.3); }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .submit-btn .btn-arrow { display: inline-block; margin-left: 0.4rem; transition: transform 0.2s; }
+    .submit-btn:hover .btn-arrow { transform: translateX(4px); }
+ 
+    /* spinner inside button */
+    .btn-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      margin: 0 auto;
+    }
+    .btn-spinner.show { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+ 
+    /* ── Right panel: result card ── */
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      animation: fadeUp 0.4s ease both;
+    }
+    .result-card.success { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
+ 
+    .result-eyebrow {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.5rem;
+    }
+    .result-amount {
+      font-family: var(--font-serif);
+      font-size: 2.6rem; line-height: 1;
+      color: var(--success);
+      margin-bottom: 0.35rem;
+    }
+    .result-model { font-size: 0.8rem; color: var(--muted); }
+ 
+    /* placeholder state */
+    .result-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 120px; gap: 0.6rem;
+      color: var(--muted); font-size: 0.85rem; text-align: center;
+    }
+    .result-placeholder svg { opacity: 0.25; }
+ 
+    /* ── Chart card ── */
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.5rem 1rem;
+      flex: 1;
+    }
+    .chart-title {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .chart-wrap { position: relative; width: 100%; height: 220px; }
+ 
+    .chart-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 220px; gap: 0.6rem;
+      color: var(--muted); font-size: 0.82rem; text-align: center;
+    }
+    .chart-placeholder svg { opacity: 0.2; }
+ 
+    /* ── Stat row ── */
+    .stat-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.6rem; margin-top: 0.75rem;
+    }
+    .stat-cell {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.75rem;
+      text-align: center;
+    }
+    .stat-val { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .stat-lbl { font-size: 0.65rem; color: var(--muted); margin-top: 1px; letter-spacing: 0.05em; text-transform: uppercase; }
+ 
+    /* ── Error toast ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
+      background: var(--card-raised); border: 1px solid rgba(248,113,113,0.3);
+      color: var(--red); font-size: 0.82rem;
+      padding: 0.7rem 1.1rem; border-radius: var(--radius-sm);
+      display: none; animation: fadeUp 0.3s ease;
+    }
+    .toast.show { display: block; }
+ 
+    /* ── Animations ── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    /* ── Responsive pills ── */
+    @media (max-width: 480px) {
+      .pill-grid.algo-grid { grid-template-columns: repeat(2, 1fr); }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+ 
+<div class="layout">
+ 
+  <!-- ═══════════════════ LEFT: FORM ═══════════════════ -->
+  <div class="left-panel">
+ 
+    <div class="header">
+      <div class="badge">ML-Powered Estimator</div>
+      <h1>Medical Cost<br><em>Predictor</em></h1>
+      <p>Enter patient details to get an instant insurance charge estimate from 6 trained ML models.</p>
+    </div>
+ 
+    <form id="predictForm" novalidate>
+ 
+      <!-- Personal Info -->
+      <div class="section-label">Personal Info</div>
+      <div class="field-grid">
+        <div class="field">
+          <label for="age">Age</label>
+          <div class="input-wrap">
+            <span class="input-icon">🎂</span>
+            <input type="number" id="age" name="age" placeholder="e.g. 32" min="1" max="120" required/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="children">Children</label>
+          <div class="input-wrap">
+            <span class="input-icon">👶</span>
+            <input type="number" id="children" name="children" placeholder="0" min="0" max="10" required/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="weight">Weight (kg)</label>
+          <div class="input-wrap">
+            <span class="input-icon">⚖️</span>
+            <input type="number" id="weight" placeholder="e.g. 70" min="1" step="0.1"/>
+          </div>
+        </div>
+        <div class="field">
+          <label for="height">Height (cm)</label>
+          <div class="input-wrap">
+            <span class="input-icon">📏</span>
+            <input type="number" id="height" placeholder="e.g. 175" min="1" step="0.1"/>
+          </div>
+        </div>
+        <div class="field full">
+          <label>BMI <span id="bmi-category" class="bmi-category"></span></label>
+          <div class="bmi-display" id="bmi-display">
+            <div class="bmi-placeholder" id="bmi-placeholder">Enter weight & height to calculate</div>
+            <div class="bmi-result" id="bmi-result" style="display:none">
+              <div class="bmi-value" id="bmi-value">—</div>
+              <div class="bmi-bar-track">
+                <div class="bmi-marker" id="bmi-marker"></div>
+              </div>
+              <div class="bmi-bar-labels">
+                <span>Under</span><span>Normal</span><span>Over</span><span>Obese</span>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="bmi" name="bmi"/>
+        </div>
+      </div>
+ 
+      <!-- Lifestyle -->
+      <div class="section-label" style="margin-top:1.75rem">Lifestyle</div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Smoker</label>
+          <div class="toggle-group">
+            <input type="radio" id="smoker_no"  name="smoker" value="0" checked/>
+            <label for="smoker_no">🚭 No</label>
+            <input type="radio" id="smoker_yes" name="smoker" value="1"/>
+            <label for="smoker_yes">🚬 Yes</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Sex</label>
+          <div class="toggle-group">
+            <input type="radio" id="sex_male"   name="sex" value="1" checked/>
+            <label for="sex_male">♂ Male</label>
+            <input type="radio" id="sex_female" name="sex" value="0"/>
+            <label for="sex_female">♀ Female</label>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- Region -->
+      <div class="section-label" style="margin-top:1.75rem">Region</div>
+      <div class="pill-grid region-grid">
+        <input type="radio" id="region_se"    name="region" value="0" checked/>
+        <label class="pill" for="region_se">🌊 South East</label>
+        <input type="radio" id="region_sw"    name="region" value="1"/>
+        <label class="pill" for="region_sw">🌵 South West</label>
+        <input type="radio" id="region_other" name="region" value="3"/>
+        <label class="pill" for="region_other">🗺️ Others</label>
+      </div>
+ 
+      <!-- Algorithm -->
+      <div class="section-label" style="margin-top:1.75rem">Algorithm</div>
+      <div class="pill-grid algo-grid">
+        <input type="radio" id="algo_avg"   name="algo" value="avg" checked/>
+        <label class="pill" for="algo_avg">⚡ Average</label>
+        <input type="radio" id="algo_lr"    name="algo" value="lr"/>
+        <label class="pill" for="algo_lr">Linear Reg.</label>
+        <input type="radio" id="algo_ridge" name="algo" value="ridge"/>
+        <label class="pill" for="algo_ridge">Ridge</label>
+        <input type="radio" id="algo_dt"    name="algo" value="dt"/>
+        <label class="pill" for="algo_dt">Dec. Tree</label>
+        <input type="radio" id="algo_rf"    name="algo" value="rf"/>
+        <label class="pill" for="algo_rf">Rnd. Forest</label>
+        <input type="radio" id="algo_gb"    name="algo" value="gb"/>
+        <label class="pill" for="algo_gb">Grad. Boost</label>
+        <input type="radio" id="algo_knn"   name="algo" value="knn"/>
+        <label class="pill" for="algo_knn">KNN</label>
+      </div>
+ 
+      <button type="submit" class="submit-btn" id="submitBtn" style="margin-top:2rem">
+        <span id="btn-label">Predict Premium <span class="btn-arrow">→</span></span>
+        <div class="btn-spinner" id="btn-spinner"></div>
+      </button>
+ 
+    </form>
+  </div>
+ 
+  <!-- ═══════════════════ RIGHT: RESULTS ═══════════════════ -->
+  <div class="right-panel">
+ 
+    <!-- Result card -->
+    <div id="result-card" class="result-card">
+      <div id="result-placeholder" class="result-placeholder">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Fill in the form and hit<br><strong style="color:var(--text)">Predict Premium</strong></span>
+      </div>
+      <div id="result-content" style="display:none">
+        <div class="result-eyebrow">Estimated Annual Cost</div>
+        <div class="result-amount" id="result-amount">$0</div>
+        <div class="result-model"  id="result-model">—</div>
+      </div>
+    </div>
+ 
+    <!-- Chart card -->
+    <div class="chart-card">
+      <div class="chart-title">All Models Comparison</div>
+      <div id="chart-placeholder" class="chart-placeholder">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        <span>Chart appears after<br>first prediction</span>
+      </div>
+      <div id="chart-section" style="display:none">
+        <div class="chart-wrap">
+          <canvas id="compChart"></canvas>
+        </div>
+        <div class="stat-row" id="stat-row"></div>
+      </div>
+    </div>
+ 
+  </div><!-- /right-panel -->
+ 
+</div><!-- /layout -->
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+/* ── BMI Calculator ── */
+const weightEl   = document.getElementById('weight');
+const heightEl   = document.getElementById('height');
+const bmiHidden  = document.getElementById('bmi');
+const bmiDisplay = document.getElementById('bmi-display');
+const bmiPH      = document.getElementById('bmi-placeholder');
+const bmiResult  = document.getElementById('bmi-result');
+const bmiValueEl = document.getElementById('bmi-value');
+const bmiMarker  = document.getElementById('bmi-marker');
+const bmiCatEl   = document.getElementById('bmi-category');
+ 
+function calcBMI() {
+  const w = parseFloat(weightEl.value);
+  const h = parseFloat(heightEl.value) / 100;
+  if (!w || !h || h <= 0) {
+    bmiPH.style.display = '';
+    bmiResult.style.display = 'none';
+    bmiDisplay.classList.remove('active');
+    bmiHidden.value = '';
+    bmiCatEl.textContent = '';
+    bmiCatEl.style.cssText = '';
+    return;
+  }
+  const bmi = +(w / (h * h)).toFixed(1);
+  bmiHidden.value = bmi;
+  bmiValueEl.textContent = bmi;
+  bmiPH.style.display = 'none';
+  bmiResult.style.display = '';
+  bmiDisplay.classList.add('active');
+ 
+  let cat, color, bg;
+  if      (bmi < 18.5) { cat='Underweight'; color='#4f9eff'; bg='rgba(79,158,255,0.15)'; }
+  else if (bmi < 25)   { cat='Normal';      color='#34d399'; bg='rgba(52,211,153,0.15)'; }
+  else if (bmi < 30)   { cat='Overweight';  color='#fbbf24'; bg='rgba(251,191,36,0.15)'; }
+  else                 { cat='Obese';       color='#f87171'; bg='rgba(248,113,113,0.15)'; }
+ 
+  bmiCatEl.textContent = cat;
+  bmiCatEl.style.color = color;
+  bmiCatEl.style.background = bg;
+  bmiMarker.style.borderColor = color;
+ 
+  const pct = Math.min(Math.max((bmi - 10) / 35 * 100, 2), 98);
+  bmiMarker.style.left = pct + '%';
+}
+weightEl.addEventListener('input', calcBMI);
+heightEl.addEventListener('input', calcBMI);
+ 
+/* ── Chart instance ── */
+let chartInstance = null;
+const CHART_COLORS = ['#4f9eff','#7b5ea7','#34d399','#fbbf24','#f87171','#a78bfa'];
+const MODEL_LABELS = {
+  lr:    'Linear Reg.',
+  ridge: 'Ridge',
+  dt:    'Dec. Tree',
+  rf:    'Rnd. Forest',
+  gb:    'Grad. Boost',
+  knn:   'KNN'
+};
+ 
+function renderChart(allPredictions) {
+  document.getElementById('chart-placeholder').style.display = 'none';
+  document.getElementById('chart-section').style.display = 'block';
+ 
+  const keys    = Object.keys(allPredictions);
+  const labels  = keys.map(k => MODEL_LABELS[k] || k);
+  const values  = keys.map(k => allPredictions[k]);
+  const max     = Math.max(...values);
+  const min     = Math.min(...values);
+  const avg     = values.reduce((a,b) => a+b, 0) / values.length;
+ 
+  /* stat row */
+  document.getElementById('stat-row').innerHTML = `
+    <div class="stat-cell">
+      <div class="stat-val" style="color:#34d399">$${Math.round(min).toLocaleString()}</div>
+      <div class="stat-lbl">Min</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val" style="color:#4f9eff">$${Math.round(avg).toLocaleString()}</div>
+      <div class="stat-lbl">Avg</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val" style="color:#f87171">$${Math.round(max).toLocaleString()}</div>
+      <div class="stat-lbl">Max</div>
+    </div>
+  `;
+ 
+  if (chartInstance) chartInstance.destroy();
+ 
+  chartInstance = new Chart(document.getElementById('compChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: CHART_COLORS.map(c => c + '30'),
+        borderColor:     CHART_COLORS,
+        borderWidth:     1.5,
+        borderRadius:    6,
+        borderSkipped:   false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161e2e',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          titleColor: '#94a3b8',
+          bodyColor: '#e4eaf5',
+          callbacks: {
+            label: ctx => ' $' + ctx.parsed.y.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#6b7a99', font: { size: 11 }, autoSkip: false, maxRotation: 30 },
+          grid:  { display: false },
+          border: { display: false }
+        },
+        y: {
+          ticks: {
+            color: '#6b7a99', font: { size: 10 },
+            callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(0)+'k' : v)
+          },
+          grid:   { color: 'rgba(255,255,255,0.05)' },
+          border: { display: false }
+        }
+      }
+    }
+  });
+}
+ 
+/* ── Toast helper ── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+ 
+/* ── Form submit → AJAX ── */
+document.getElementById('predictForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+ 
+  /* Validate BMI */
+  if (!bmiHidden.value) {
+    bmiDisplay.style.borderColor = '#f87171';
+    bmiDisplay.style.boxShadow   = '0 0 0 3px rgba(248,113,113,0.15)';
+    bmiPH.textContent  = 'Please enter weight & height first';
+    bmiPH.style.color  = '#f87171';
+    bmiPH.style.display = '';
+    setTimeout(() => {
+      bmiDisplay.style.borderColor = '';
+      bmiDisplay.style.boxShadow   = '';
+      bmiPH.textContent = 'Enter weight & height to calculate';
+      bmiPH.style.color = '';
+    }, 2600);
+    return;
+  }
+ 
+  /* UI: loading */
+  const btn    = document.getElementById('submitBtn');
+  const label  = document.getElementById('btn-label');
+  const spinner= document.getElementById('btn-spinner');
+  btn.disabled = true;
+  label.style.display   = 'none';
+  spinner.classList.add('show');
+ 
+  try {
+    const fd = new FormData(this);
+    const res = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
+      body: fd
+    });
+ 
+    const data = await res.json();
+ 
+    if (!res.ok || data.error) {
+      showToast('Error: ' + (data.error || 'Something went wrong'));
+      return;
+    }
+ 
+    /* Result card */
+    const card = document.getElementById('result-card');
+    card.classList.add('success');
+    document.getElementById('result-placeholder').style.display = 'none';
+    document.getElementById('result-content').style.display     = 'block';
+    document.getElementById('result-amount').textContent =
+      '$' + data.prediction.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+    document.getElementById('result-model').textContent = 'via ' + data.model_name;
+ 
+    /* Chart */
+    renderChart(data.all_predictions);
+ 
+  } catch(err) {
+    showToast('Network error — is Flask running?');
+  } finally {
+    btn.disabled = false;
+    label.style.display = '';
+    spinner.classList.remove('show');
+  }
+});
+</script>
+ 
+</body>
+</html>

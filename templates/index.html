@@ -1,6 +1,3 @@
-Index · HTML
-Copy
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +8,7 @@ Copy
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
     :root {
       --bg:           #080c14;
       --surface:      #0e1421;
@@ -35,14 +32,14 @@ Copy
       --font:         'DM Sans', sans-serif;
       --font-serif:   'DM Serif Display', serif;
     }
- 
+
     html, body {
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
       font-family: var(--font);
     }
- 
+
     /* ── Background orbs ── */
     body::before {
       content: '';
@@ -52,7 +49,7 @@ Copy
         radial-gradient(ellipse 45% 40% at 85% 85%, rgba(123,94,167,0.10) 0%, transparent 60%),
         radial-gradient(ellipse 30% 30% at 60% 40%, rgba(52,211,153,0.05) 0%, transparent 55%);
     }
- 
+
     /* ── Layout ── */
     .layout {
       position: relative; z-index: 1;
@@ -62,12 +59,12 @@ Copy
       gap: 0;
       min-height: 100vh;
     }
- 
+
     @media (max-width: 900px) {
       .layout { grid-template-columns: 1fr; }
       .right-panel { order: -1; }
     }
- 
+
     /* ── Left panel ── */
     .left-panel {
       padding: 2.5rem 2.5rem 2.5rem 3rem;
@@ -76,9 +73,9 @@ Copy
       gap: 1.5rem;
       overflow-y: auto;
     }
- 
+
     @media (max-width: 600px) { .left-panel { padding: 1.5rem 1.25rem; } }
- 
+
     /* ── Right panel ── */
     .right-panel {
       background: var(--surface);
@@ -92,7 +89,7 @@ Copy
       height: 100vh;
       overflow-y: auto;
     }
- 
+
     @media (max-width: 900px) {
       .right-panel {
         position: static;
@@ -101,10 +98,10 @@ Copy
         border-bottom: 1px solid var(--border);
       }
     }
- 
+
     /* ── Header ── */
     .header { animation: fadeDown 0.55s ease both; }
- 
+
     .badge {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 0.68rem; font-weight: 600;
@@ -121,7 +118,7 @@ Copy
       width: 6px; height: 6px; border-radius: 50%;
       background: var(--accent);
     }
- 
+
     .header h1 {
       font-family: var(--font-serif);
       font-size: clamp(2rem, 3.5vw, 2.75rem);
@@ -139,7 +136,7 @@ Copy
       color: var(--muted); font-size: 0.93rem; font-weight: 300;
       line-height: 1.65; max-width: 400px;
     }
- 
+
     /* ── Section label ── */
     .section-label {
       font-size: 0.68rem; font-weight: 600;
@@ -149,7 +146,7 @@ Copy
       margin-bottom: 1rem;
     }
     .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
- 
+
     /* ── Field grid ── */
     .field-grid {
       display: grid;
@@ -162,7 +159,7 @@ Copy
       font-size: 0.78rem; font-weight: 500;
       color: var(--label); letter-spacing: 0.01em;
     }
- 
+
     /* ── Inputs ── */
     .input-wrap { position: relative; }
     .input-icon {
@@ -170,7 +167,7 @@ Copy
       transform: translateY(-50%);
       color: var(--muted); pointer-events: none; font-size: 1rem;
     }
- 
+
     input[type="number"], select {
       width: 100%;
       padding: 0.7rem 0.95rem 0.7rem 2.4rem;
@@ -195,7 +192,7 @@ Copy
       padding-right: 2.4rem; cursor: pointer;
     }
     select option { background: #111827; }
- 
+
     /* ── Toggle (smoker / sex) ── */
     .toggle-group {
       display: flex;
@@ -218,7 +215,7 @@ Copy
       background: rgba(79,158,255,0.13);
       color: var(--accent);
     }
- 
+
     /* ── BMI display ── */
     .bmi-display {
       background: var(--card);
@@ -259,7 +256,7 @@ Copy
       display: flex; justify-content: space-between;
       font-size: 0.64rem; color: var(--muted);
     }
- 
+
     /* ── Region / Algo pills ── */
     .pill-grid {
       display: grid;
@@ -291,7 +288,7 @@ Copy
       border-color: var(--accent2);
       color: #c4a8f5;
     }
- 
+
     /* ── Submit button ── */
     .submit-btn {
       width: 100%; padding: 0.95rem 1.5rem;
@@ -309,7 +306,7 @@ Copy
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .submit-btn .btn-arrow { display: inline-block; margin-left: 0.4rem; transition: transform 0.2s; }
     .submit-btn:hover .btn-arrow { transform: translateX(4px); }
- 
+
     /* spinner inside button */
     .btn-spinner {
       display: none; width: 16px; height: 16px;
@@ -320,7 +317,7 @@ Copy
     }
     .btn-spinner.show { display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
- 
+
     /* ── Right panel: result card ── */
     .result-card {
       background: var(--card);
@@ -330,7 +327,7 @@ Copy
       animation: fadeUp 0.4s ease both;
     }
     .result-card.success { border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.05); }
- 
+
     .result-eyebrow {
       font-size: 0.68rem; font-weight: 600;
       letter-spacing: 0.12em; text-transform: uppercase;
@@ -343,7 +340,7 @@ Copy
       margin-bottom: 0.35rem;
     }
     .result-model { font-size: 0.8rem; color: var(--muted); }
- 
+
     /* placeholder state */
     .result-placeholder {
       display: flex; flex-direction: column;
@@ -352,7 +349,7 @@ Copy
       color: var(--muted); font-size: 0.85rem; text-align: center;
     }
     .result-placeholder svg { opacity: 0.25; }
- 
+
     /* ── Chart card ── */
     .chart-card {
       background: var(--card);
@@ -367,7 +364,7 @@ Copy
       color: var(--muted); margin-bottom: 1rem;
     }
     .chart-wrap { position: relative; width: 100%; height: 220px; }
- 
+
     .chart-placeholder {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -375,7 +372,7 @@ Copy
       color: var(--muted); font-size: 0.82rem; text-align: center;
     }
     .chart-placeholder svg { opacity: 0.2; }
- 
+
     /* ── Stat row ── */
     .stat-row {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
@@ -389,7 +386,7 @@ Copy
     }
     .stat-val { font-size: 0.9rem; font-weight: 600; color: var(--text); }
     .stat-lbl { font-size: 0.65rem; color: var(--muted); margin-top: 1px; letter-spacing: 0.05em; text-transform: uppercase; }
- 
+
     /* ── Error toast ── */
     .toast {
       position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999;
@@ -399,7 +396,7 @@ Copy
       display: none; animation: fadeUp 0.3s ease;
     }
     .toast.show { display: block; }
- 
+
     /* ── Animations ── */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-14px); }
@@ -409,7 +406,7 @@ Copy
       from { opacity: 0; transform: translateY(12px); }
       to   { opacity: 1; transform: translateY(0); }
     }
- 
+
     /* ── Responsive pills ── */
     @media (max-width: 480px) {
       .pill-grid.algo-grid { grid-template-columns: repeat(2, 1fr); }
@@ -418,48 +415,48 @@ Copy
   </style>
 </head>
 <body>
- 
+
 <div class="layout">
- 
+
   <!-- ═══════════════════ LEFT: FORM ═══════════════════ -->
   <div class="left-panel">
- 
+
     <div class="header">
       <div class="badge">ML-Powered Estimator</div>
       <h1>Medical Cost<br><em>Predictor</em></h1>
       <p>Enter patient details to get an instant insurance charge estimate from 6 trained ML models.</p>
     </div>
- 
+
     <form id="predictForm" novalidate>
- 
+
       <!-- Personal Info -->
       <div class="section-label">Personal Info</div>
       <div class="field-grid">
         <div class="field">
           <label for="age">Age</label>
           <div class="input-wrap">
-            <span class="input-icon">🎂</span>
+            <span class="input-icon"></span>
             <input type="number" id="age" name="age" placeholder="e.g. 32" min="1" max="120" required/>
           </div>
         </div>
         <div class="field">
           <label for="children">Children</label>
           <div class="input-wrap">
-            <span class="input-icon">👶</span>
+            <span class="input-icon"></span>
             <input type="number" id="children" name="children" placeholder="0" min="0" max="10" required/>
           </div>
         </div>
         <div class="field">
           <label for="weight">Weight (kg)</label>
           <div class="input-wrap">
-            <span class="input-icon">⚖️</span>
+            <span class="input-icon"></span>
             <input type="number" id="weight" placeholder="e.g. 70" min="1" step="0.1"/>
           </div>
         </div>
         <div class="field">
           <label for="height">Height (cm)</label>
           <div class="input-wrap">
-            <span class="input-icon">📏</span>
+            <span class="input-icon"></span>
             <input type="number" id="height" placeholder="e.g. 175" min="1" step="0.1"/>
           </div>
         </div>
@@ -480,7 +477,7 @@ Copy
           <input type="hidden" id="bmi" name="bmi"/>
         </div>
       </div>
- 
+
       <!-- Lifestyle -->
       <div class="section-label" style="margin-top:1.75rem">Lifestyle</div>
       <div class="field-grid">
@@ -488,38 +485,38 @@ Copy
           <label>Smoker</label>
           <div class="toggle-group">
             <input type="radio" id="smoker_no"  name="smoker" value="0" checked/>
-            <label for="smoker_no">🚭 No</label>
+            <label for="smoker_no"> No</label>
             <input type="radio" id="smoker_yes" name="smoker" value="1"/>
-            <label for="smoker_yes">🚬 Yes</label>
+            <label for="smoker_yes"> Yes</label>
           </div>
         </div>
         <div class="field">
           <label>Sex</label>
           <div class="toggle-group">
             <input type="radio" id="sex_male"   name="sex" value="1" checked/>
-            <label for="sex_male">♂ Male</label>
+            <label for="sex_male"> Male</label>
             <input type="radio" id="sex_female" name="sex" value="0"/>
-            <label for="sex_female">♀ Female</label>
+            <label for="sex_female"> Female</label>
           </div>
         </div>
       </div>
- 
+
       <!-- Region -->
       <div class="section-label" style="margin-top:1.75rem">Region</div>
       <div class="pill-grid region-grid">
         <input type="radio" id="region_se"    name="region" value="0" checked/>
-        <label class="pill" for="region_se">🌊 South East</label>
+        <label class="pill" for="region_se"> South East</label>
         <input type="radio" id="region_sw"    name="region" value="1"/>
-        <label class="pill" for="region_sw">🌵 South West</label>
+        <label class="pill" for="region_sw"> South West</label>
         <input type="radio" id="region_other" name="region" value="3"/>
-        <label class="pill" for="region_other">🗺️ Others</label>
+        <label class="pill" for="region_other"> Others</label>
       </div>
- 
+
       <!-- Algorithm -->
       <div class="section-label" style="margin-top:1.75rem">Algorithm</div>
       <div class="pill-grid algo-grid">
         <input type="radio" id="algo_avg"   name="algo" value="avg" checked/>
-        <label class="pill" for="algo_avg">⚡ Average</label>
+        <label class="pill" for="algo_avg"> Average</label>
         <input type="radio" id="algo_lr"    name="algo" value="lr"/>
         <label class="pill" for="algo_lr">Linear Reg.</label>
         <input type="radio" id="algo_ridge" name="algo" value="ridge"/>
@@ -533,18 +530,18 @@ Copy
         <input type="radio" id="algo_knn"   name="algo" value="knn"/>
         <label class="pill" for="algo_knn">KNN</label>
       </div>
- 
+
       <button type="submit" class="submit-btn" id="submitBtn" style="margin-top:2rem">
         <span id="btn-label">Predict Premium <span class="btn-arrow">→</span></span>
         <div class="btn-spinner" id="btn-spinner"></div>
       </button>
- 
+
     </form>
   </div>
- 
+
   <!-- ═══════════════════ RIGHT: RESULTS ═══════════════════ -->
   <div class="right-panel">
- 
+
     <!-- Result card -->
     <div id="result-card" class="result-card">
       <div id="result-placeholder" class="result-placeholder">
@@ -559,7 +556,7 @@ Copy
         <div class="result-model"  id="result-model">—</div>
       </div>
     </div>
- 
+
     <!-- Chart card -->
     <div class="chart-card">
       <div class="chart-title">All Models Comparison</div>
@@ -576,13 +573,13 @@ Copy
         <div class="stat-row" id="stat-row"></div>
       </div>
     </div>
- 
+
   </div><!-- /right-panel -->
- 
+
 </div><!-- /layout -->
- 
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
 /* ── BMI Calculator ── */
 const weightEl   = document.getElementById('weight');
@@ -594,7 +591,7 @@ const bmiResult  = document.getElementById('bmi-result');
 const bmiValueEl = document.getElementById('bmi-value');
 const bmiMarker  = document.getElementById('bmi-marker');
 const bmiCatEl   = document.getElementById('bmi-category');
- 
+
 function calcBMI() {
   const w = parseFloat(weightEl.value);
   const h = parseFloat(heightEl.value) / 100;
@@ -613,24 +610,24 @@ function calcBMI() {
   bmiPH.style.display = 'none';
   bmiResult.style.display = '';
   bmiDisplay.classList.add('active');
- 
+
   let cat, color, bg;
   if      (bmi < 18.5) { cat='Underweight'; color='#4f9eff'; bg='rgba(79,158,255,0.15)'; }
   else if (bmi < 25)   { cat='Normal';      color='#34d399'; bg='rgba(52,211,153,0.15)'; }
   else if (bmi < 30)   { cat='Overweight';  color='#fbbf24'; bg='rgba(251,191,36,0.15)'; }
   else                 { cat='Obese';       color='#f87171'; bg='rgba(248,113,113,0.15)'; }
- 
+
   bmiCatEl.textContent = cat;
   bmiCatEl.style.color = color;
   bmiCatEl.style.background = bg;
   bmiMarker.style.borderColor = color;
- 
+
   const pct = Math.min(Math.max((bmi - 10) / 35 * 100, 2), 98);
   bmiMarker.style.left = pct + '%';
 }
 weightEl.addEventListener('input', calcBMI);
 heightEl.addEventListener('input', calcBMI);
- 
+
 /* ── Chart instance ── */
 let chartInstance = null;
 const CHART_COLORS = ['#4f9eff','#7b5ea7','#34d399','#fbbf24','#f87171','#a78bfa'];
@@ -642,18 +639,18 @@ const MODEL_LABELS = {
   gb:    'Grad. Boost',
   knn:   'KNN'
 };
- 
+
 function renderChart(allPredictions) {
   document.getElementById('chart-placeholder').style.display = 'none';
   document.getElementById('chart-section').style.display = 'block';
- 
+
   const keys    = Object.keys(allPredictions);
   const labels  = keys.map(k => MODEL_LABELS[k] || k);
   const values  = keys.map(k => allPredictions[k]);
   const max     = Math.max(...values);
   const min     = Math.min(...values);
   const avg     = values.reduce((a,b) => a+b, 0) / values.length;
- 
+
   /* stat row */
   document.getElementById('stat-row').innerHTML = `
     <div class="stat-cell">
@@ -669,9 +666,9 @@ function renderChart(allPredictions) {
       <div class="stat-lbl">Max</div>
     </div>
   `;
- 
+
   if (chartInstance) chartInstance.destroy();
- 
+
   chartInstance = new Chart(document.getElementById('compChart'), {
     type: 'bar',
     data: {
@@ -719,18 +716,18 @@ function renderChart(allPredictions) {
     }
   });
 }
- 
+
 /* ── Toast helper ── */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
- 
+
 /* ── Form submit → AJAX ── */
 document.getElementById('predictForm').addEventListener('submit', async function(e) {
   e.preventDefault();
- 
+
   /* Validate BMI */
   if (!bmiHidden.value) {
     bmiDisplay.style.borderColor = '#f87171';
@@ -746,7 +743,7 @@ document.getElementById('predictForm').addEventListener('submit', async function
     }, 2600);
     return;
   }
- 
+
   /* UI: loading */
   const btn    = document.getElementById('submitBtn');
   const label  = document.getElementById('btn-label');
@@ -754,7 +751,7 @@ document.getElementById('predictForm').addEventListener('submit', async function
   btn.disabled = true;
   label.style.display   = 'none';
   spinner.classList.add('show');
- 
+
   try {
     const fd = new FormData(this);
     const res = await fetch('/predict', {
@@ -762,14 +759,14 @@ document.getElementById('predictForm').addEventListener('submit', async function
       headers: { 'X-Requested-With': 'XMLHttpRequest' },
       body: fd
     });
- 
+
     const data = await res.json();
- 
+
     if (!res.ok || data.error) {
       showToast('Error: ' + (data.error || 'Something went wrong'));
       return;
     }
- 
+
     /* Result card */
     const card = document.getElementById('result-card');
     card.classList.add('success');
@@ -778,10 +775,10 @@ document.getElementById('predictForm').addEventListener('submit', async function
     document.getElementById('result-amount').textContent =
       '$' + data.prediction.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
     document.getElementById('result-model').textContent = 'via ' + data.model_name;
- 
+
     /* Chart */
     renderChart(data.all_predictions);
- 
+
   } catch(err) {
     showToast('Network error — is Flask running?');
   } finally {
@@ -791,6 +788,6 @@ document.getElementById('predictForm').addEventListener('submit', async function
   }
 });
 </script>
- 
+
 </body>
 </html>
